@@ -1,0 +1,9 @@
+# Ignore Pycache directories
+__pycache__/
+*.py[cod]
+
+# Ignore Celerybeat files
+celerybeat-schedule.*
+celerybeat-schedule.bak
+celerybeat-schedule.dat
+celerybeat-schedule.dir
