@@ -13,8 +13,9 @@ services:
     image: mysql:8.0
     container_name: mysql
     environment:
-      DB_PASSWORD: "${DB_PASSWORD}"
-      DB_NAME: "${DB_NAME}"
+      MYSQL_ROOT_PASSWORD : "${DB_PASSWORD}"
+      MYSQL_DATABASE: "${DB_NAME}"
+
     ports:
       - "${DB_PORT}:3306"
     volumes:

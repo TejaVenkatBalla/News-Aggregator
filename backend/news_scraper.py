@@ -9,14 +9,12 @@ import os
 
 logger = logging.getLogger(__name__)
 
-
 def scrape_and_store_articles(db: Session):
     """Scrape articles from Google News and store in database"""
     try:
         # Google News search URL
-        url = os.getenv("GOOGLE_NEWS_URL",'https://news.google.com/search?q=2025%20super%20bowl&hl=en-IN&gl=IN&ceid=IN%3Aen')
-
-
+        url = os.getenv("GOOGLE_NEWS_URL", 'https://news.google.com/search?q=2025%20super%20bowl&hl=en-IN&gl=IN&ceid=IN%3Aen')
+        
         # Send GET request
         headers = {"User-Agent": "Mozilla/5.0"}
         response = requests.get(url, headers=headers)
@@ -32,13 +30,19 @@ def scrape_and_store_articles(db: Session):
             title_tag = article.select_one("a.JtKRv")
             timestamp_tag = article.select_one("time.hvbAAd")
             source_tag = article.select_one("div.vr1PYe")
-            url_tag = article.select_one("a.WwrzSb")
+            url_tag = article.select_one("a.WwrzSb") 
+            image_tag = article.select_one("img.Quavad")
             
             if title_tag and url_tag:
                 title = title_tag.get_text(strip=True)
                 url = "https://news.google.com" + url_tag["href"].replace("./", "/")
                 timestamp_str = timestamp_tag["datetime"] if timestamp_tag and timestamp_tag.has_attr("datetime") else ""
                 source = source_tag.get_text(strip=True) if source_tag else ""
+                
+                # Extract first image URL from srcset
+                imageurl = ""
+                if image_tag and image_tag.has_attr("srcset"):
+                    imageurl = "https://news.google.com" + image_tag["srcset"].split(",")[0].split(" ")[0]
                 
                 # Check if article already exists
                 existing = db.query(NewsArticleDB).filter_by(url=url).first()
@@ -51,7 +55,8 @@ def scrape_and_store_articles(db: Session):
                     source=source,
                     url=url,
                     summary="",  # Google News doesn't provide summaries
-                    timestamp=datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%SZ") if timestamp_str else datetime.utcnow()
+                    timestamp=datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%SZ") if timestamp_str else datetime.utcnow(),
+                    imageurl=imageurl
                 )
                 db.add(new_article)
 

@@ -1,18 +1,16 @@
-from fastapi import FastAPI, HTTPException, Response, Depends, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 import logging
 from typing import List, Optional
-from celery.schedules import crontab
-from celery import Celery
 from sqlalchemy.orm import Session
 from database import get_db
 from models import NewsArticle, NewsArticleDB, UserDB, UserCreate, User
 from news_fetch import fetch_and_store_articles
+from news_scraper import scrape_and_store_articles
 from passlib.context import CryptContext
-
 import os
 
 # Password hashing context
@@ -137,10 +135,15 @@ async def trigger_fetch_news(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=result["message"])
     return {"status": "success", "message": result["message"]}
 
-@app.get("/api", status_code=200)
-def index():
-    return {"message": "/api is working "}
+@app.post("/api/scrape_news", status_code=200)
+async def trigger_scrape_news(db: Session = Depends(get_db)):
+    """Trigger news scrape operation"""
+    result =scrape_and_store_articles(db)
+    if result["status"] == "error":
+        raise HTTPException(status_code=500, detail=result["message"])
+    return {"status": "success", "message": result["message"]}
 
+# Root route
 @app.get("/", status_code=200)
 def index():
     return {"message": "Hello, World!"}

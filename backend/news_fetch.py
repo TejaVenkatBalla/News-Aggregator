@@ -8,7 +8,6 @@ import os
 
 logger = logging.getLogger(__name__)
 
-
 def fetch_and_store_articles(db: Session):
     """Fetch articles from NewsAPI and store in database"""
     try:
@@ -21,7 +20,6 @@ def fetch_and_store_articles(db: Session):
             "sortBy": "popularity",
             "searchIn": "title,description"
         }
-
 
         # Make API request
         response = requests.get(url, params=params)
@@ -41,8 +39,11 @@ def fetch_and_store_articles(db: Session):
                 source=article['source']['name'],
                 url=article['url'],
                 summary=article['description'],
-                timestamp=datetime.strptime(article['publishedAt'], "%Y-%m-%dT%H:%M:%SZ")
+                timestamp=datetime.strptime(article['publishedAt'], "%Y-%m-%dT%H:%M:%SZ"),
+                imageurl=article['urlToImage'] if article['urlToImage'] else None  # Extracting image URL
+
             )
+
             db.add(new_article)
 
         db.commit()
