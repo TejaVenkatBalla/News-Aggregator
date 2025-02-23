@@ -13,7 +13,7 @@ A full-stack application for fetching and Scraping news Articles related 2025 Su
 - React
 - React Router
 
-## Database
+### Database
 - MySQL
 - Redis 
 
