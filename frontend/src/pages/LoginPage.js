@@ -1,4 +1,6 @@
 import React from 'react';
+import './LoginPage.css';
+
 import { useAuth } from '../AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -20,7 +22,8 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="login-page">
+    <div className="login-page"> 
+
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <input name="email" type="email" placeholder="Email" required />

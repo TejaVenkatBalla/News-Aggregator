@@ -1,4 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi.staticfiles import StaticFiles
+
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
 from jose import JWTError, jwt
@@ -22,6 +24,10 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 app = FastAPI()
+
+# Serve static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 

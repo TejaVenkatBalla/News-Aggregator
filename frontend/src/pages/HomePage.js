@@ -1,4 +1,6 @@
 import React from 'react';
+import './HomePage.css';
+
 import { useAuth } from '../AuthContext';
 import NewsList from '../components/NewsList';
 

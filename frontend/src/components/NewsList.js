@@ -6,6 +6,14 @@ const NewsList = () => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const imageStyle = {
+    width: "100%", // Makes the image responsive
+    maxWidth: "500px", // Prevents it from getting too large
+    height: "auto", // Maintains aspect ratio
+    borderRadius: "8px", // Adds rounded corners
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Adds a subtle shadow
+    objectFit: "cover", // Ensures the image fills the container without distortion
+  };
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -46,6 +54,12 @@ const NewsList = () => {
         <div key={article.id} className="news-item">
           <h3>{article.title}</h3>
           <p>{article.summary}</p>
+          <img
+  src={article.imageurl && !article.imageurl.startsWith("/static") ? article.imageurl : `${API_BASE_URL}${article.imageurl || ""}`}
+  alt={article.title}
+  style={imageStyle}
+/>
+
           <a href={article.url} target="_blank" rel="noopener noreferrer">
             Read more
           </a>
