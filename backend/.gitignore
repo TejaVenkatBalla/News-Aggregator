@@ -9,3 +9,4 @@ celerybeat-schedule.dat
 celerybeat-schedule.dir
 
 /static/
+/migrations
