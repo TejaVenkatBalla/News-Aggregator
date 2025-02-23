@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../AuthContext';
 import { API_BASE_URL } from '../config';
 
 const NewsList = () => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const token = localStorage.getItem('token');
+
   const imageStyle = {
     width: "100%", // Makes the image responsive
     maxWidth: "500px", // Prevents it from getting too large
@@ -19,10 +19,10 @@ const NewsList = () => {
     const fetchNews = async () => {
       try {
         const headers = {};
-        if (user) {
-          const token = localStorage.getItem('token');
+        if (token) {
           headers['Authorization'] = `Bearer ${token}`;
         }
+
 
         const response = await fetch(`${API_BASE_URL}/api/news`, {
           headers: headers
@@ -42,7 +42,8 @@ const NewsList = () => {
     };
 
     fetchNews();
-  }, [user]);
+  }, [token]);
+
 
   if (loading) {
     return <div>Loading news...</div>;
@@ -55,10 +56,16 @@ const NewsList = () => {
           <h3>{article.title}</h3>
           <p>{article.summary}</p>
           <img
-  src={article.imageurl && !article.imageurl.startsWith("/static") ? article.imageurl : `${API_BASE_URL}${article.imageurl || ""}`}
-  alt={article.title}
-  style={imageStyle}
-/>
+            src={
+              article.imageurl && !article.imageurl.startsWith("/static")
+                ? article.imageurl
+                : article.imageurl
+                ? `${API_BASE_URL}${article.imageurl}`
+                : "/img_nav.png" // Fallback image URL
+            }
+            alt={article.title || "Default Image"}
+            style={imageStyle}
+          />
 
           <a href={article.url} target="_blank" rel="noopener noreferrer">
             Read more

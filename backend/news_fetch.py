@@ -15,10 +15,9 @@ def fetch_and_store_articles(db: Session):
         url = "https://newsapi.org/v2/everything"
         params = {
             "apiKey": os.getenv("NEWS_API_KEY",'899e4e23f4404bb38efcac044b654665'),
-            "q": "SuperBowl-2025",
+            "q": "Super Bowl 2025",
             "language": "en",
-            "sortBy": "popularity",
-            "searchIn": "title,description"
+            "searchIn": "title"
         }
 
         # Make API request

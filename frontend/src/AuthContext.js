@@ -1,35 +1,11 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { API_BASE_URL } from './config';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      // Verify token and fetch user data
-      fetch(`${API_BASE_URL}/auth/me`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-      .then(response => response.json())
-      .then(data => {
-        setUser(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        localStorage.removeItem('token');
-        setUser(null);
-        setLoading(false);
-      });
-    } else {
-      setLoading(false);
-    }
-  }, []);
 
   const login = async (credentials) => {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -46,16 +22,16 @@ export function AuthProvider({ children }) {
 
     const data = await response.json();
     localStorage.setItem('token', data.access_token);
-    setUser({ email: credentials.username });
   };
+
 
   const logout = () => {
     localStorage.removeItem('token');
-    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ login, logout, loading }}>
+
       {children}
     </AuthContext.Provider>
   );

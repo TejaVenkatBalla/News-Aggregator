@@ -3,13 +3,16 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 
 const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { loading } = useAuth();
+  const token = localStorage.getItem('token');
+
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  if (!user) {
+  if (!token) {
+
     return <Navigate to="/login" />;
   }
 
