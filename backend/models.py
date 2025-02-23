@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr , ConfigDict
 from datetime import datetime
 from database import Base
 from passlib.context import CryptContext
@@ -21,8 +21,7 @@ class User(UserBase):
     id: int
     is_active: bool
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class UserDB(Base):
     """SQLAlchemy model for users"""
@@ -36,8 +35,9 @@ class UserDB(Base):
     def verify_password(self, password: str):
         return pwd_context.verify(password, self.hashed_password)
 
-class NewsArticleBase(BaseModel):
-    """Pydantic model for news articles"""
+class NewsArticle(BaseModel):
+    """Pydantic model for reading news articles"""
+    id: int
     title: str
     source: str
     url: str
@@ -45,17 +45,7 @@ class NewsArticleBase(BaseModel):
     timestamp: datetime
     imageurl: Optional[str] = None
 
-
-class NewsArticleCreate(NewsArticleBase):
-    """Pydantic model for creating news articles"""
-    pass
-
-class NewsArticle(NewsArticleBase):
-    """Pydantic model for reading news articles"""
-    id: int
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class NewsArticleDB(Base):
     """SQLAlchemy model for news articles"""

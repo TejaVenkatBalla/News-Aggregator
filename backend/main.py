@@ -23,7 +23,12 @@ SECRET_KEY = os.getenv("SECRET_KEY",'f8c93b1a5e92df23b7a1d66c917b5e6ebde124f9e2b
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+if not os.path.exists(static_dir):
+    os.makedirs(static_dir)  # Create the folder if it doesn't exist
+    
 app = FastAPI()
+
 
 # Serve static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
