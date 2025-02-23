@@ -4,12 +4,9 @@ import os
 # Initialize Celery with environment variables
 celery_app = Celery(
     'tasks',
-    #broker=os.getenv(f"redis://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}/0", redis://localhost:6379/0),
-    #backend=os.getenv(f"redis://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}/0", redis://localhost:6379/0)
-    # broker=os.getenv('CELERY_BROKER_URL', f"redis://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}/0"),
-    # backend=os.getenv('CELERY_RESULT_BACKEND', f"redis://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}/0")
     broker=os.getenv('REDIS_URL'),
     backend=os.getenv('REDIS_URL'),
+    include=["tasks"]
 )
 
 # Configure Celery
@@ -22,6 +19,7 @@ celery_app.conf.update(
     task_track_started=True,
     worker_send_task_events=True,
     task_send_sent_event=True,
+    broker_connection_retry_on_startup = True,
     beat_schedule={
         'fetch-articles-every-30-min': {
             'task': 'tasks.fetch_articles_task',
@@ -35,11 +33,9 @@ celery_app.conf.update(
         },
         'rander-every-10-sec': {
             'task': 'tasks.rander',
-            'schedule': 10.0,  # 2 hours in seconds
+            'schedule': 10.0,  # 10 sec in seconds
             'options': {'queue': 'periodic_tasks'}
         },
     }
 )
 
-# Import tasks after app is created to avoid circular imports
-celery_app.autodiscover_tasks()

@@ -23,7 +23,9 @@ SECRET_KEY = os.getenv("SECRET_KEY",'f8c93b1a5e92df23b7a1d66c917b5e6ebde124f9e2b
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-static_dir = os.path.join(os.path.dirname(__file__), "static")
+#static_dir = os.path.join(os.path.dirname(__file__), "static")
+# Ensure static directory matches the Docker shared volume
+static_dir = "/app/static/images"
 if not os.path.exists(static_dir):
     os.makedirs(static_dir)  # Create the folder if it doesn't exist
     
@@ -93,7 +95,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     return user
 
 # Authentication routes
-@app.post("/auth/register", response_model=User)
+@app.post("/auth/register")
 async def register(user: UserCreate, db: Session = Depends(get_db)):
     # Check if user already exists
     existing_user = db.query(UserDB).filter(UserDB.email == user.email).first()
@@ -124,12 +126,8 @@ async def login(credentials: dict, db: Session = Depends(get_db)):
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.get("/auth/me", response_model=User)
-async def read_users_me(current_user: User = Depends(get_current_user)):
-    return current_user
-
 # News routes
-@app.get("/api/news", response_model=List[NewsArticle])
+@app.get("/api/news")
 async def get_news(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
         articles = db.query(NewsArticleDB).order_by(NewsArticleDB.timestamp.desc()).all()

@@ -56,10 +56,15 @@ def scrape_and_store_articles(db: Session):
                     image_response = requests.get(imageurl, stream=True)  # Stream to handle large images
                     if image_response.status_code == 200:
                         sanitized_title = sanitize_filename(title)  # Sanitize title for filename
-                        image_filename = os.path.join("static", "images", f"{sanitized_title}.jpg")
 
-                        # Ensure the directory exists
-                        os.makedirs(os.path.dirname(image_filename), exist_ok=True)
+
+                        # Use an absolute path inside Docker to store images in the shared volume
+                        STATIC_DIR = "/app/static/images"
+                        os.makedirs(STATIC_DIR, exist_ok=True)  # Ensure directory exists
+
+                        # Save image in the shared static directory
+                        image_filename = os.path.join(STATIC_DIR, f"{sanitized_title}.jpg")
+
 
                         # Save the image
                         with open(image_filename, 'wb') as f:

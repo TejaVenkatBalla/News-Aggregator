@@ -1,5 +1,4 @@
 from celery import shared_task
-from celery_config import celery_app
 from sqlalchemy.orm import Session
 from database import get_db
 from news_fetch import fetch_and_store_articles
@@ -34,7 +33,7 @@ def scrape_articles_task():
 
 @shared_task
 def rander():
-    print("hello")
+    print("celery beat testing ")
     logger.info(f"rander exexuted")
-    return "hello"
+    return "celery beat testing(Random testing Function)"
     
